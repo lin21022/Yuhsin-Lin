@@ -7,6 +7,7 @@ title: Yuhsin Lin's CV
 <div id="emailaddress">
 <a href="mailto:lin21022@byui.edu">lin21022@byui.edu</a>
 | <a href="www.linkedin.com/in/yuhsin-lin-237580235">My Linkedin page</a>
+
 </div>
 
 
