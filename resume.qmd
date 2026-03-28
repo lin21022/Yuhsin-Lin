@@ -1,88 +1,107 @@
 ---
 layout: cv
-title: Isaac Newtons's CV
+title: Yuhsin Lin's CV
 ---
-# Isaac Newton
-Physicist, Mathematician, Cambridge professor.
+# Yuhsin Lin
 
-<div id="webaddress">
-<a href="isaac@applesdofall.org">isaac@applesdofall.org</a>
-| <a href="http://en.wikipedia.org/wiki/Isaac_Newton">My wikipedia page</a>
+<div id="emailaddress">
+<a href="mailto:lin21022@byui.edu">lin21022@byui.edu</a>
+| <a href="www.linkedin.com/in/yuhsin-lin-237580235">My Linkedin page</a>
 </div>
 
 
 ## Currently
 
-Standing on the shoulders of giants
+Mechanical Engineering student at Brigham Young University- Idaho.
 
-### Specialized in
+### Techanical Skills:
 
-Laws of motion, gravitation, minting coins, disliking [Robert Hooke](http://en.wikipedia.org/wiki/Robert_Hooke)
+- **Engineering & Design Tools:** SolidWorks (CSWA, CSWA-SD, CSWA-S), Finite Element Analysis (FEA), Revit, Thermal Design, and 3D printing. 
+
+- **Programming & Data Analysis:** Python, Machine Learning, R, MySQL, and Mathematica. 
+
+- **Microcontroller Systems:** Arduino, PID Control Systems, and Micro:bit. 
+
+- **Professional:** Analytical thinking, data-driven decision making, and cross-functional team collaboration.
 
 
-### Research interests
 
-Cooling, power series, optics, alchemy, planetary motions, apples.
+### Projects:
 
+- **Mechatronics:** Arduino-based PID temperature control system.
+
+- **Thermal Systems:** HVAC ventilation design/thermal load analysis. 
+
+- **Mechanical Design:** Hands-free access assistants. 
+ 
 
 ## Education
 
-`1654-1660`
-__The King's School, Grantham.__
+```September 2022 - April 2027 (Anticipated)```  
 
-`June 1661 - now`
-__Trinity College, Cambridge__
+**Brigham Young University - Idaho**, Rexburg, ID 
 
-- Sizar
+- Bachelor’s Degree in Mechanical Engineering 
 
-`1667 - death`
-__Trinity College, Cambridge__
+- Minor in Data Science 
 
-- Fellow
+- GPA: 4.0/4.0
 
-
-
-## Awards
-
-`2012`
-President, *Royal Society*, London, UK
-
-Associate, *French Academy of Science*, Paris, France
+- Member of Tau Beta Pi National Engineering Society
 
 
 
-## Publications
+## Certifications
 
-<!-- A list is also available [online](http://scholar.google.co.uk/citations?user=LTOTl0YAAAAJ) -->
+- Certified SolidWorks Associate (CSWA) 
 
-### Journals
+- SolidWorks Associate Sustainability (CSWA-SD) 
 
-`1669`
-Newton Sir I, De analysi per æquationes numero terminorum infinitas. 
-
-`1669`
-Lectiones opticæ.
-
-etc. etc. etc.
-
-### Patents
-
-`2012`
-Infinitesimal calculus for solutions to physics problems, [SMBC](http://www.techdirt.com/articles/20121011/09312820678/if-patents-had-been-around-time-newton.shtml) patent 001
+- SolidWorks Simulation Associate (CSWA-S)
 
 
-## Occupation
 
-`1600`
-__Royal Mint__, London
+## Work Experience
+ 
+```September 2022 - Present``` 
 
-- Warden
-- Minted coins
+**Teacher Assistant/Tutor**, Brigham Young University - Idaho 
 
-`1600`
-__Lucasian professor of Mathematics__, Cambridge University
+- Supported diverse students learning 5+ STEM courses, including mechatronic systems, engineering statistics, physics, and chemistry.
 
+- Collaborated with professors on grading, assignment design, and review sessions.
 
+- Developed strong mentoring and communication skills to convey complex academic concepts.
+
+```April 2023 - August 2023``` 
+
+**Assembler Intern**, Polaris 
+
+- Performed wide variety of tasks including preparing vehicle parts, sub-systems, and components.
+
+- Improved product line efficiency through proactive problem solving and teamwork.
+
+- Inspected approximately 80 vehicles per day on a moving assembly line with a nearly 100% defect-free quality rate.
+
+```August 2021 - December 2021``` 
+
+**Teacher Assistant**, Kumon 
+
+- Trained 50 students in Math, English, and Chinese.
+
+- Acquired leadership and interpersonal skills by organizing classes and cooperating with staff.
+
+## Volunteer Experience
+
+```September 2023 - February 2025``` 
+
+**Full-time Volunteer Missionary**, The Church of Jesus Christ of Latter-Day Saints 
+
+- Dedicated 18 months to community service and outreach in Ontario, Canada.
+
+- Selected as a leader of 20+ representatives, providing training, coordination, and motivational support.
+
+- Mentored 100+ individuals weekly, strengthening cross-cultural communication skills in native Chinese and professional English.
 
 <!-- ### Footer
 
