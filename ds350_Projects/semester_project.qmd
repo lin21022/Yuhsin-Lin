@@ -112,17 +112,14 @@ experiment_info <- tibble(
   `Motor without VFD` = c(
     "06/11/2026",
     "10:30 AM - 06:10 PM",
-    "Shin Kong Life Tower 38F"
-  ),
+    "Shin Kong Life Tower 38F"),
   `Motor with VFD` = c(
     "06/10/2026",
     "09:30 AM - 05:50 PM",
-    "Shin Kong Life Tower 18F"
-  )
+    "Shin Kong Life Tower 18F")
 )
 
-experiment_info %>%
-  gt()
+experiment_info %>% gt()
   
 ```
 
@@ -135,25 +132,15 @@ experiment_info %>%
 
 
 ```{r}
-
 #| warning: false
-
 #| include: false
 
-
-
 T2I <- T2 %>% 
-
   mutate(s=as.integer(window_ms/1000)) %>%
-
   mutate(timestamp = as.POSIXct("2026-06-11 10:30:00")+s) %>%
-
   mutate(IR=IR/100, IS= IS/100, IT= IT/100) %>% 
-
   select(timestamp, IR, IS, IT) %>% 
-
   filter(!is.na(IR) & !is.na(IS) & !is.na(IT))
-
 
 
 T2I_xts <- tk_xts(T2I, date_var = timestamp)
@@ -169,24 +156,13 @@ The following interactive time-series plot illustrates the three-phase motor cur
 ```{r}
 
 T2plot <- (
-
   dygraph(T2I_xts, main = "Motor Without VFD") %>%
-
-    dyOptions(colors = c("blue", "gold", "red"),
-
-              strokeWidth = 2) %>%
-
+    dyOptions(colors = c("blue", "gold", "red"),strokeWidth = 2) %>%
     dyAxis("y", label = "Current (A)") %>%
-
     dyHighlight(highlightCircleSize = 5, 
-
                 highlightSeriesBackgroundAlpha = 0.2,
-
                 hideOnMouseOut = FALSE) %>%
-
     dyRangeSelector(height = 40) )
-
-
 
 T2plot
 
@@ -205,24 +181,15 @@ The three phase currents remain remarkably stable throughout the test period. Al
 
 
 ```{r}
-
 #| warning: false
-
 #| include: false
 
 T1I <- T1 %>% 
-
   mutate(s=as.integer(window_ms/1000)) %>% 
-
   mutate(timestamp = as.POSIXct("2026-06-10 09:30:00") +s) %>%
-
   mutate(IR=IR/100, IS= IS/100, IT= IT/100) %>% 
-
   select(timestamp, IR, IS, IT) %>% 
-
   filter(!is.na(IR) & !is.na(IS) & !is.na(IT))
-
-
 
 T1I_xts <- tk_xts(T1I, date_var = timestamp)
 
@@ -237,27 +204,15 @@ The next visualization shows the three-phase currents for the motor operating wi
 ```{r}
 
 T1plot <- (
-
   dygraph(T1I_xts, main = "Motor With VFD") %>% 
-
-    dyOptions(colors = c("blue", "gold", "red"),
-
-              strokeWidth = 2) %>%
-
+    dyOptions(colors = c("blue", "gold", "red"),strokeWidth = 2) %>%
     dyAxis("y", label = "Current (A)") %>%
-
     dyHighlight(highlightCircleSize = 5, 
-
                 highlightSeriesBackgroundAlpha = 0.2,
-
                 hideOnMouseOut = FALSE) %>%
-
     dyRangeSelector(height = 40) )
 
-
-
 T1plot
-
 
 
 ```
@@ -281,30 +236,18 @@ While the time-series plots illustrate the overall operating behavior, they beco
 ```{r}
 
 T1_long <- T1I %>% 
-
   pivot_longer(
-
     cols= c(IR,IS,IT),
-
     names_to = 'Phase',
-
-    values_to = 'Current'
-
-  )
+    values_to = 'Current' )
 
 
 
 T2_long<- T2I %>% 
-
   pivot_longer(
-
     cols= c(IR,IS,IT),
-
     names_to = 'Phase',
-
-    values_to = 'Current'
-
-  )
+    values_to = 'Current')
 
 
 
@@ -319,100 +262,59 @@ T2_long<- T2I %>%
 ```{r}
 
 
-
-
-
 T2_env <- T2_long %>%
-
   mutate(group = (row_number()-1) %/% 300) %>%
-
   group_by(group) %>%
-
   summarise(
-
     timestamp = mean(timestamp),
-
     upper = max(Current),
-
     lower = min(Current),
-
     std= sd(Current),
-
-    .groups = 'drop'
-
-  ) 
+    .groups = 'drop') 
 
 
 
 (
 
   ggplot() +
-
     geom_point(
-
       data = T2I,
-
       aes(timestamp, IR),
-
       color='blue',
-
       alpha = 0.2,
-
       size = 0.3) +
-
     geom_point(
-
       data = T2I,
-
       aes(timestamp, IS),
-
       color='yellow',
-
       alpha = 0.2,
-
       size = 0.3) +
-
     geom_point(
-
       data = T2I,
-
       aes(timestamp, IT),
-
       color='red',
-
       alpha = 0.2,
-
       size = 0.3) +
-
     geom_line(
-
       data = T2_env,
-
       aes(timestamp, upper),
-
       color = "gray50",
-
       linewidth = 1) +
-
     geom_line(
-
       data = T2_env,
-
       aes(timestamp, lower),
-
       color = "gray50",
-
       linewidth = 1) +
-
     labs(
-
       title = "Motor Without VFD Current Distribution Envelope Plot",
-
       x = "Time",
-
       y = "Current (A)") +
-
-    theme_minimal()
+    theme_minimal()+
+    theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+          plot.subtitle = element_text(size = 12,hjust = 0.5),
+          axis.title = element_text(size = 12),
+          axis.text = element_text(size = 10),
+          panel.grid.major = element_line(linewidth = 0.2))
 
 )
 
@@ -435,96 +337,57 @@ The envelope maintains a nearly constant width throughout the experiment, with t
 
 
 T1_env <- T1_long %>%
-
   mutate(group = (row_number()-1) %/% 300) %>%
-
   group_by(group) %>%
-
   summarise(
-
     timestamp = mean(timestamp),
-
     upper = max(Current),
-
     lower = min(Current),
-
     std= sd(Current),
-
-    .groups = 'drop'
-
-  ) 
+    .groups = 'drop') 
 
 
 
 (
-
   ggplot() +
-
     geom_point(
-
       data = T1I,
-
       aes(timestamp, IR),
-
       color='blue',
-
       alpha = 0.2,
-
       size = 0.3) +
-
     geom_point(
-
       data = T1I,
-
       aes(timestamp, IS),
-
       color='yellow',
-
       alpha = 0.2,
-
       size = 0.3) +
-
     geom_point(
-
       data = T1I,
-
       aes(timestamp, IT),
-
       color='red',
-
       alpha = 0.2,
-
       size = 0.3) +
-
     geom_line(
-
       data = T1_env,
-
       aes(timestamp, upper),
-
       color = "gray50",
-
       linewidth = 1) +
-
     geom_line(
-
       data = T1_env,
-
       aes(timestamp, lower),
-
       color = "gray50",
-
       linewidth = 1) +
-
     labs(
-
       title = "Motor Without VFD Current Distribution Envelope Plot",
-
       x = "Time",
-
       y = "Current (A)") +
-
-    theme_minimal()
+    theme_minimal()+
+    theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+          plot.subtitle = element_text(size = 12,hjust = 0.5),
+          axis.title = element_text(size = 12),
+          axis.text = element_text(size = 10),
+          panel.grid.major = element_line(linewidth = 0.2))
 
 )
 
