@@ -279,36 +279,39 @@ T2_env <- T2_long %>%
   ggplot() +
     geom_point(
       data = T2I,
-      aes(timestamp, IR),
-      color='blue',
-      alpha = 0.2,
+      aes(timestamp, IR, color='IR'),
+      alpha = 0.3,
       size = 0.3) +
     geom_point(
       data = T2I,
-      aes(timestamp, IS),
-      color='yellow',
-      alpha = 0.2,
+      aes(timestamp, IS, color='IS'),
+      alpha = 0.3,
       size = 0.3) +
     geom_point(
       data = T2I,
-      aes(timestamp, IT),
-      color='red',
-      alpha = 0.2,
+      aes(timestamp, IT, color='IT'),
+      alpha = 0.3,
       size = 0.3) +
     geom_line(
       data = T2_env,
-      aes(timestamp, upper),
-      color = "gray50",
+      aes(timestamp, upper, color = "Boundary"),
       linewidth = 1) +
     geom_line(
       data = T2_env,
-      aes(timestamp, lower),
-      color = "gray50",
+      aes(timestamp, lower, color = "Boundary"),
       linewidth = 1) +
+    scale_color_manual(
+      values = c(
+        "IR" = "blue",
+        "IS" = "gold",
+        "IT" = "red",
+        "Boundary" = "gray50"))+
     labs(
       title = "Motor Without VFD Current Distribution Envelope Plot",
       x = "Time",
-      y = "Current (A)") +
+      y = "Current (A)",
+      color= "Phase/Boundary") +
+    guides(color = guide_legend(override.aes = list(size =3,linewidth =2,alpha =1)))+
     theme_minimal()+
     theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
           plot.subtitle = element_text(size = 12,hjust = 0.5),
@@ -349,39 +352,43 @@ T1_env <- T1_long %>%
 
 
 (
+
   ggplot() +
     geom_point(
       data = T1I,
-      aes(timestamp, IR),
-      color='blue',
-      alpha = 0.2,
+      aes(timestamp, IR, color='IR'),
+      alpha = 0.3,
       size = 0.3) +
     geom_point(
       data = T1I,
-      aes(timestamp, IS),
-      color='yellow',
-      alpha = 0.2,
+      aes(timestamp, IS, color='IS'),
+      alpha = 0.3,
       size = 0.3) +
     geom_point(
       data = T1I,
-      aes(timestamp, IT),
-      color='red',
-      alpha = 0.2,
+      aes(timestamp, IT, color='IT'),
+      alpha = 0.3,
       size = 0.3) +
     geom_line(
       data = T1_env,
-      aes(timestamp, upper),
-      color = "gray50",
+      aes(timestamp, upper, color = "Boundary"),
       linewidth = 1) +
     geom_line(
       data = T1_env,
-      aes(timestamp, lower),
-      color = "gray50",
+      aes(timestamp, lower, color = "Boundary"),
       linewidth = 1) +
+    scale_color_manual(
+      values = c(
+        "IR" = "blue",
+        "IS" = "gold",
+        "IT" = "red",
+        "Boundary" = "gray50"))+
     labs(
       title = "Motor Without VFD Current Distribution Envelope Plot",
       x = "Time",
-      y = "Current (A)") +
+      y = "Current (A)",
+      color= "Phase/Boundary") +
+    guides(color = guide_legend(override.aes = list(size =3,linewidth =2,alpha =1)))+
     theme_minimal()+
     theme(plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
           plot.subtitle = element_text(size = 12,hjust = 0.5),
