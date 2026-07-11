@@ -50,7 +50,7 @@ website:
           file: ds250.qmd
         - text: "---"
         - text: "Project 1"
-          file: ds250_Projects/semester_project.qmd
+          file: ds250_Projects/project1.qmd
         - text: "---"
         - text: "Project 2"
           file: ds250_Projects/project2.qmd
@@ -65,7 +65,7 @@ website:
         - text: "Data Wrangling/Visualization"
           file: ds350.qmd
         - text: "---"
-        - text: "Project 1"
+        - text: "Semester Project"
           file: ds350_Projects/semester_project.qmd
         - text: "---"
         - text: "Project 2"
