@@ -1,0 +1,7 @@
+---
+title: "DS350 Data Wrangling/ Visualization"
+subtitle: "my data science portfolio"
+# use quarto markdown to 
+---
+
+

@@ -1,0 +1,561 @@
+---
+title: "Analysis of Three-Phase Motor Current Characteristics Under VFD and Direct-Line Operation"
+subtitle: "DS 350 Data Wrangling/ Visualization"
+author: "Yuhsin Lin"
+format:
+  html:
+    self-contained: true
+    page-layout: full
+    title-block-banner: true
+    toc: true
+    toc-depth: 3
+    toc-location: body
+    number-sections: false
+    html-math-method: katex
+    code-fold: true
+    code-summary: "Show the code"
+    code-overflow: wrap
+    code-copy: hover
+    code-tools:
+        source: false
+        toggle: true
+        caption: See code
+execute: 
+  warning: false
+    
+---
+
+
+
+
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+
+library(tidyverse)
+library(ggplot2)
+library(downloader)
+library(pander)
+library(readr)
+library(dplyr)
+library(stringr)
+library(gt)
+library(readxl)
+library(haven)
+library(foreign)
+library(lubridate)
+library(tidyquant)
+library(sf)
+library(USAboundaries)
+library(ggrepel)
+library(dygraphs)
+library(tidyquant)
+library(timetk)
+
+
+
+T1 <- read_csv("https://raw.githubusercontent.com/lin21022/Yuhsin-Lin/refs/heads/main/win_0002.csv")
+
+T2 <- read_csv("https://raw.githubusercontent.com/lin21022/Yuhsin-Lin/refs/heads/main/win_0003.csv")
+
+
+
+```
+
+
+
+# Purpose
+
+
+
+Industrial motors are widely used in manufacturing and building automation systems, and electrical current provides valuable insight into their operating behavior. One factor that significantly affects motor current is the use of a Variable Frequency Drive (VFD), which regulates motor speed by continuously adjusting the supply frequency. Unlike motors operating directly from the power supply, motors driven by a VFD experience changing electrical loads as operating speed is modified.
+
+
+
+This project compares three-phase current measurements collected under two operating conditions: a motor running directly from the power supply (without a VFD) and a motor controlled by a VFD. By examining the relationships among the three phase currents, the analysis aims to characterize normal operating behavior under both conditions.
+
+
+
+The primary research question is:
+
+
+
+**How do three-phase motor current patterns differ between motor operation with a Variable Frequency Drive (VFD) and direct-line operation without a VFD?**
+
+
+
+# Data 
+
+
+
+The datasets consist of time-series measurements of three-phase motor currents (IR, IS, and IT) collected during two separate field tests. Each observation contains the elapsed recording time in milliseconds together with the corresponding current measurements for the R, S, and T phases.
+
+
+
+Before analysis, the elapsed time was converted into timestamps, current values were converted from centiamperes to amperes, and incomplete observations containing missing current measurements were removed. These preprocessing steps produced clean time-series datasets suitable for visualization and comparison.
+
+
+
+Because both datasets were collected using the same measurement system but under different operating conditions, they provide an opportunity to compare how a VFD influences current behavior while maintaining similar electrical loading.
+
+
+
+The following table summarizes the experimental conditions for the two motor operating tests, including the test date, measurement period, and testing location:
+
+
+```{r}
+
+experiment_info <- tibble(
+  Information = c("Date", "Time", "Location"),
+  `Motor without VFD` = c(
+    "06/11/2026",
+    "10:30 AM - 06:10 PM",
+    "Shin Kong Life Tower 38F"
+  ),
+  `Motor with VFD` = c(
+    "06/10/2026",
+    "09:30 AM - 05:50 PM",
+    "Shin Kong Life Tower 18F"
+  )
+)
+
+experiment_info %>%
+  gt()
+  
+```
+
+ 
+
+
+
+# Motor Operation without a Variable Frequency Drive
+
+
+
+```{r}
+
+#| warning: false
+
+#| include: false
+
+
+
+T2I <- T2 %>% 
+
+  mutate(s=as.integer(window_ms/1000)) %>%
+
+  mutate(timestamp = as.POSIXct("2026-06-11 10:30:00")+s) %>%
+
+  mutate(IR=IR/100, IS= IS/100, IT= IT/100) %>% 
+
+  select(timestamp, IR, IS, IT) %>% 
+
+  filter(!is.na(IR) & !is.na(IS) & !is.na(IT))
+
+
+
+T2I_xts <- tk_xts(T2I, date_var = timestamp)
+
+```
+
+
+
+The following interactive time-series plot illustrates the three-phase motor currents during direct-line operation without a Variable Frequency Drive. Because the motor operates at a fixed supply frequency, relatively stable current behavior is expected throughout the experiment.
+
+
+
+```{r}
+
+T2plot <- (
+
+  dygraph(T2I_xts, main = "Motor Without VFD") %>%
+
+    dyOptions(colors = c("blue", "gold", "red"),
+
+              strokeWidth = 2) %>%
+
+    dyAxis("y", label = "Current (A)") %>%
+
+    dyHighlight(highlightCircleSize = 5, 
+
+                highlightSeriesBackgroundAlpha = 0.2,
+
+                hideOnMouseOut = FALSE) %>%
+
+    dyRangeSelector(height = 40) )
+
+
+
+T2plot
+
+```
+
+
+
+The three phase currents remain remarkably stable throughout the test period. Although small fluctuations are present because of AC power supply and normal measurement noise, the overall current level changes very little over time. The R, S, and T phases closely track one another and maintain a nearly constant separation, indicating balanced electrical operation under a fixed-speed condition. This behavior is characteristic of a motor operating without speed regulation, where the electrical load remains relatively constant.
+
+
+
+
+
+# Motor Operation with a Variable Frequency Drive
+
+
+
+```{r}
+
+#| warning: false
+
+#| include: false
+
+T1I <- T1 %>% 
+
+  mutate(s=as.integer(window_ms/1000)) %>% 
+
+  mutate(timestamp = as.POSIXct("2026-06-10 09:30:00") +s) %>%
+
+  mutate(IR=IR/100, IS= IS/100, IT= IT/100) %>% 
+
+  select(timestamp, IR, IS, IT) %>% 
+
+  filter(!is.na(IR) & !is.na(IS) & !is.na(IT))
+
+
+
+T1I_xts <- tk_xts(T1I, date_var = timestamp)
+
+```
+
+
+
+The next visualization shows the three-phase currents for the motor operating with a Variable Frequency Drive (VFD). Unlike direct-line operation, the VFD continuously adjusts the supply frequency to control motor speed, producing greater variation in current over time.
+
+
+
+```{r}
+
+T1plot <- (
+
+  dygraph(T1I_xts, main = "Motor With VFD") %>% 
+
+    dyOptions(colors = c("blue", "gold", "red"),
+
+              strokeWidth = 2) %>%
+
+    dyAxis("y", label = "Current (A)") %>%
+
+    dyHighlight(highlightCircleSize = 5, 
+
+                highlightSeriesBackgroundAlpha = 0.2,
+
+                hideOnMouseOut = FALSE) %>%
+
+    dyRangeSelector(height = 40) )
+
+
+
+T1plot
+
+
+
+```
+
+
+
+In contrast to the direct-line operation, the current magnitude varies substantially throughout the experiment as the VFD changes the motor operating speed. Despite these changes, all three phases increase and decrease together, preserving a consistent relationship among the phase currents. This synchronized behavior indicates that the observed current variation is primarily caused by intentional speed regulation rather than electrical imbalance. The strong correlation among the three phases demonstrates stable operation even under continuously changing operating conditions.
+
+
+
+
+
+# Envelope Plots
+
+
+
+While the time-series plots illustrate the overall operating behavior, they become difficult to interpret because of the large number of observations. To better compare the consistency of the three phases, the data were transformed into long format using pivot_longer(). An envelope was then calculated for groups of observations by computing the maximum and minimum current values within each interval. The resulting envelope provides a concise visualization of the spread between the three phase currents over time.
+
+
+
+```{r}
+
+T1_long <- T1I %>% 
+
+  pivot_longer(
+
+    cols= c(IR,IS,IT),
+
+    names_to = 'Phase',
+
+    values_to = 'Current'
+
+  )
+
+
+
+T2_long<- T2I %>% 
+
+  pivot_longer(
+
+    cols= c(IR,IS,IT),
+
+    names_to = 'Phase',
+
+    values_to = 'Current'
+
+  )
+
+
+
+```
+
+
+
+**Motor Operation without a Variable Frequency Drive:**
+
+
+
+```{r}
+
+
+
+
+
+T2_env <- T2_long %>%
+
+  mutate(group = (row_number()-1) %/% 300) %>%
+
+  group_by(group) %>%
+
+  summarise(
+
+    timestamp = mean(timestamp),
+
+    upper = max(Current),
+
+    lower = min(Current),
+
+    std= sd(Current),
+
+    .groups = 'drop'
+
+  ) 
+
+
+
+(
+
+  ggplot() +
+
+    geom_point(
+
+      data = T2I,
+
+      aes(timestamp, IR),
+
+      color='blue',
+
+      alpha = 0.2,
+
+      size = 0.3) +
+
+    geom_point(
+
+      data = T2I,
+
+      aes(timestamp, IS),
+
+      color='yellow',
+
+      alpha = 0.2,
+
+      size = 0.3) +
+
+    geom_point(
+
+      data = T2I,
+
+      aes(timestamp, IT),
+
+      color='red',
+
+      alpha = 0.2,
+
+      size = 0.3) +
+
+    geom_line(
+
+      data = T2_env,
+
+      aes(timestamp, upper),
+
+      color = "gray50",
+
+      linewidth = 1) +
+
+    geom_line(
+
+      data = T2_env,
+
+      aes(timestamp, lower),
+
+      color = "gray50",
+
+      linewidth = 1) +
+
+    labs(
+
+      title = "Motor Without VFD Current Distribution Envelope Plot",
+
+      x = "Time",
+
+      y = "Current (A)") +
+
+    theme_minimal()
+
+)
+
+
+
+```
+
+
+
+The envelope maintains a nearly constant width throughout the experiment, with the upper boundary remaining around 16.5 A and the lower boundary around 15 A. The highest and lowest phase currents remain remarkably consistent over time. This indicates that the differences among the three phases are stable rather than changing dynamically, suggesting balanced and repeatable motor operation under direct-line conditions. Because the motor operates at a constant speed, both the average current level and the phase relationships remain essentially unchanged throughout the operation.
+
+
+
+**Motor Operation with a Variable Frequency Drive:**
+
+
+
+```{r}
+
+
+
+T1_env <- T1_long %>%
+
+  mutate(group = (row_number()-1) %/% 300) %>%
+
+  group_by(group) %>%
+
+  summarise(
+
+    timestamp = mean(timestamp),
+
+    upper = max(Current),
+
+    lower = min(Current),
+
+    std= sd(Current),
+
+    .groups = 'drop'
+
+  ) 
+
+
+
+(
+
+  ggplot() +
+
+    geom_point(
+
+      data = T1I,
+
+      aes(timestamp, IR),
+
+      color='blue',
+
+      alpha = 0.2,
+
+      size = 0.3) +
+
+    geom_point(
+
+      data = T1I,
+
+      aes(timestamp, IS),
+
+      color='yellow',
+
+      alpha = 0.2,
+
+      size = 0.3) +
+
+    geom_point(
+
+      data = T1I,
+
+      aes(timestamp, IT),
+
+      color='red',
+
+      alpha = 0.2,
+
+      size = 0.3) +
+
+    geom_line(
+
+      data = T1_env,
+
+      aes(timestamp, upper),
+
+      color = "gray50",
+
+      linewidth = 1) +
+
+    geom_line(
+
+      data = T1_env,
+
+      aes(timestamp, lower),
+
+      color = "gray50",
+
+      linewidth = 1) +
+
+    labs(
+
+      title = "Motor Without VFD Current Distribution Envelope Plot",
+
+      x = "Time",
+
+      y = "Current (A)") +
+
+    theme_minimal()
+
+)
+
+```
+
+
+
+Although the average current changes significantly as the VFD adjusts the motor speed, the envelope width remains relatively uniform throughout the experiment. This indicates that all three phases respond proportionally to changes in operating conditions. Rather than introducing phase imbalance, the VFD causes simultaneous changes in current magnitude across all three phases while preserving balanced electrical behavior.
+
+
+
+
+
+Comparing the two envelope plots reveals the primary difference between the operating conditions. The motor without a VFD maintains a nearly constant current level, producing an almost horizontal envelope over time. In contrast, the motor driven by a VFD exhibits substantial variation in average current as the drive continuously adjusts the operating speed. Despite these differences in current magnitude, both envelope plots remain relatively narrow, demonstrating that the three phases remain closely balanced under both operating conditions. This suggests that the VFD influences the overall current demand rather than disrupting the electrical relationship among the three phases.
+
+
+
+# Conclusion
+
+
+
+This project compared three-phase motor current behavior under direct-line operation and Variable Frequency Drive (VFD) operation. Interactive time-series visualizations showed that both operating conditions maintained strong synchronization among the three electrical phases. The motor operating without a VFD exhibited a nearly constant current level throughout the experiment, whereas the motor driven by a VFD displayed larger variations in current as the drive adjusted motor speed.
+
+
+
+The envelope plots further demonstrated that the spread between the three phase currents remained consistently small under both operating conditions. Although the VFD significantly influenced current magnitude over time, it did not introduce noticeable phase imbalance. These findings indicate that normal VFD operation changes the overall current demand while preserving balanced three-phase electrical behavior.
+
+
+
+The analysis establishes a baseline description of normal motor current characteristics under two common operating conditions. This baseline can serve as a reference for future studies investigating abnormal operating behavior, phase imbalance, or fault detection using three-phase current measurements.
+
+
+
+
